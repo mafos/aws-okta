@@ -136,7 +136,9 @@ func (p *Provider) getSamlSessionCreds() (sts.Credentials, error) {
 	source := sourceProfile(p.profile, p.profiles)
 	oktaAwsSAMLUrl, ok := p.profiles["okta"]["aws_saml_url"]
 	if !ok {
-		return sts.Credentials{}, errors.New("aws_saml_url missing from ~/.aws/config")
+		if oktaAwsSAMLUrl, ok = p.profiles[p.profile]["aws_saml_url"]; !ok {
+			return sts.Credentials{}, errors.New("aws_saml_url missing from ~/.aws/config")
+		}
 	}
 
 	profileARN, ok := p.profiles[source]["role_arn"]
